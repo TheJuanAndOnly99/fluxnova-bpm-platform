@@ -49,7 +49,7 @@ public final class TestUtils {
   }
 
   /**
-   * Custom request factory that applies a trust-all SSL socket factory and hostname verifier
+   * Custom request factory that applies an SSL socket factory backed by the test keystore
    * only for HTTPS connections created by this test client.
    */
   private static class TrustSelfSignedClientHttpRequestFactory extends SimpleClientHttpRequestFactory {
