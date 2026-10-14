@@ -179,12 +179,13 @@ jobs:
       - name: Run license scan
         working-directory: ${{ matrix.path }}
         run: |
-          # FINOS Category A licenses ONLY
+          # FINOS Category A licenses + approved additions
           # Reference: https://community.finos.org/docs/governance/software-projects/license-categories/
-          # NOTE: LGPL, GPL, MPL, CDDL, CC-*, OFL are NOT allowed per FINOS Category A
+          # NOTE: LGPL, GPL, MPL, CDDL, CC-* are NOT allowed per FINOS Category A
           # EPL allowed per FINOS (Juan approval)
+          # OFL-1.1 allowed per FINOS (Juan approval) - for font packages like @ibm/plex
 
-          ALLOWED_LICENSES='Apache-2.0;Apache-1.1;MIT;ISC;BSD-2-Clause;BSD-3-Clause;0BSD;Unlicense;Python-2.0;PostgreSQL;BSL-1.0;W3C;WTFPL;Xnet;NCSA;ZPL-2.0;Zlib;EPL-1.0;EPL-2.0;BlueOak-1.0.0;CC0-1.0;CC-BY-4.0'
+          ALLOWED_LICENSES='Apache-2.0;Apache-1.1;MIT;ISC;BSD-2-Clause;BSD-3-Clause;0BSD;Unlicense;Python-2.0;PostgreSQL;BSL-1.0;W3C;WTFPL;Xnet;NCSA;ZPL-2.0;Zlib;EPL-1.0;EPL-2.0;BlueOak-1.0.0;CC0-1.0;CC-BY-4.0;OFL-1.1'
 
           EXCLUSIONS="${{ steps.pkg.outputs.exclude }}"
 
