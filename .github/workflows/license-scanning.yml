@@ -39,8 +39,12 @@ jobs:
 
       - name: Generate third-party license report
         run: |
+          # Exclude qa modules: they are test infrastructure and are not published
+          # to Maven Central (not in sonatype-oss-release profile). This avoids
+          # false positives from test-only dependencies like jython.
           mvn -B \
             org.codehaus.mojo:license-maven-plugin:2.4.0:aggregate-add-third-party \
+            -pl '!qa' \
             -Dlicense.includedScopes=compile,runtime \
             -Dlicense.excludedScopes=test,provided,system \
             -Dlicense.sortArtifactByName=true \
