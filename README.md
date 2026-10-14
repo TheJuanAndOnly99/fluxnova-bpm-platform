@@ -65,6 +65,40 @@ Releases are manually triggered from `release/*` branches through GitHub Actions
 
 For release instructions, including how to create major, minor, and patch release branches and run the workflow manually, see [RELEASE.md](RELEASE.md).
 
+### Local builds with `docker buildx bake`
+
+The repository includes `docker-bake.hcl` with two targets:
+
+- `corretto21` (Amazon Corretto 21, DNF-based image)
+- `corretto21_alpine` (Amazon Corretto 21 Alpine image)
+
+The `corretto21` Dockerfile target supports optional BuildKit secrets:
+
+- `dnf_repo`: optional DNF repo file mounted as `/run/secrets/dnf_repo`
+- `trust_cert`: optional CA cert mounted as `/run/secrets/trust_cert` (trust store is updated only when provided)
+
+#### Basic builds (no args, no secrets)
+
+```bash
+docker buildx bake -f ./docker-bake.hcl
+```
+
+```bash
+docker buildx bake -f ./docker-bake.hcl corretto21
+```
+
+#### Build with Optional Build Args and Secrets
+
+```bash
+IMAGE_NAME=<docker-registry-host>/fluxnova-bpm-platform \
+VERSION=<version> \
+docker buildx bake -f ./docker-bake.hcl [target] \
+  --set '*.args.DOCKER_REGISTRY=<docker-registry-host>' \
+  --set '*.args.ALPINE_REGISTRY=<alpine-registry-url>' \
+  --set 'corretto21.secrets=id=dnf_repo,src=<path-to-dnf-repo-file>' \
+  --set 'corretto21.secrets=id=trust_cert,src=<path-to-ca-cert>'
+```
+
 ## Contributing
 
 Please see our [contribution guidelines](CONTRIBUTING.md) for how to raise issues and how to contribute code to our project.
