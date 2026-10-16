@@ -119,9 +119,15 @@ After the workflow is manually run, `.github/workflows/release.yml` will:
 - Build and publish Maven artifacts to Maven Central.
 - Create the Git tag, for example `v<release-version>`.
 - Build the distro ZIP needed for Docker.
-- Build and publish the Docker Hub image:
-  - `finos/fluxnova-bpm-platform:<release-version>`
-  - `finos/fluxnova-bpm-platform:latest`
+- Build and publish the Docker Hub images:
+  - Based on Amazon Corretto 21
+    - `finos/fluxnova-bpm-platform:<release-version>`
+    - `finos/fluxnova-bpm-platform:<release-version>-corretto21`
+    - `finos/fluxnova-bpm-platform:latest`
+    - `finos/fluxnova-bpm-platform:latest-corretto21`
+  - Based on Alpine 3
+    - `finos/fluxnova-bpm-platform:<release-version>-corretto21-alpine`
+    - `finos/fluxnova-bpm-platform:latest-corretto21-alpine`
 - Publish Javadocs to GitHub Pages under `javadocs/<major>.<minor>`.
 - Publish OpenAPI docs to GitHub Pages under `openapi/<major>.<minor>`.
 - Notify `finos/fluxnova-examples` about the new release version.
