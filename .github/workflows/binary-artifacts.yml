@@ -1,0 +1,69 @@
+name: Binary Artifact Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check-binaries:
+    name: Check for disallowed binary files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for disallowed binary files
+        run: |
+          # Define allowed binary extensions (images, fonts, example PDFs)
+          ALLOWED_EXTENSIONS="png|jpg|jpeg|gif|ico|svg|otf|ttf|woff|woff2|eot|pdf"
+          
+          # Define disallowed extensions (executables, archives, keystores)
+          DISALLOWED_EXTENSIONS="jar|class|war|ear|zip|sgx|tar\.gz|tgz|p12|jks|keystore|exe|dll|so|dylib"
+          
+          echo "Checking for disallowed binary files..."
+          
+          # Find all tracked files with disallowed extensions
+          DISALLOWED_FILES=$(git ls-files | grep -iE "\.($DISALLOWED_EXTENSIONS)$" || true)
+          
+          if [ -n "$DISALLOWED_FILES" ]; then
+            echo "::error::Found disallowed binary files in the repository:"
+            echo "$DISALLOWED_FILES"
+            echo ""
+            echo "These file types must not be committed to version control."
+            echo "Please generate them at build or test time instead."
+            echo ""
+            echo "See CONTRIBUTING.md 'Binary files' section for details."
+            exit 1
+          fi
+          
+          echo "Checking for binary files with non-allowed extensions..."
+          
+          # Check for binary files that might not have a recognized extension
+          # Use git diff to detect binary files, excluding allowed extensions
+          BINARY_FILES=""
+          for file in $(git ls-files); do
+            # Skip files with allowed extensions
+            if echo "$file" | grep -qiE "\.($ALLOWED_EXTENSIONS)$"; then
+              continue
+            fi
+            
+            # Check if file is binary using git's detection
+            if git diff --no-index --numstat /dev/null "$file" 2>/dev/null | grep -q "^-"; then
+              BINARY_FILES="$BINARY_FILES$file"$'\n'
+            fi
+          done
+          
+          if [ -n "$BINARY_FILES" ]; then
+            echo "::error::Found binary files without allowed extensions:"
+            echo "$BINARY_FILES"
+            echo ""
+            echo "Binary files must have an allowed extension (images, fonts, PDFs)"
+            echo "or be generated at build time rather than committed."
+            exit 1
+          fi
+          
+          echo "✓ No disallowed binary files found"

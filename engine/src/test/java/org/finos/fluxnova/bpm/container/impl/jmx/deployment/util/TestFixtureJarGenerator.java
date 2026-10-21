@@ -24,12 +24,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
- * Generates test fixture JAR files at test time from existing directory structures.
- * This replaces pre-committed JAR files to comply with OpenSSF Baseline control OSPS-QA-05.01.
+ * Generates test fixture archive files (JAR/ZIP/SGX) at test time from existing directory structures.
+ * This replaces pre-committed archive files to comply with OpenSSF Baseline control OSPS-QA-05.01.
  */
 public class TestFixtureJarGenerator {
 
@@ -58,25 +58,29 @@ public class TestFixtureJarGenerator {
       Path targetPath = resourceBase.resolve(targetJar);
 
       if (Files.exists(sourcePath) && Files.isDirectory(sourcePath)) {
-        createJarFromDirectory(sourcePath, targetPath);
+        createArchiveFromDirectory(sourcePath, targetPath);
       }
     }
 
     initialized = true;
   }
 
-  private static void createJarFromDirectory(Path sourceDir, Path targetJar) throws IOException {
-    try (OutputStream fos = Files.newOutputStream(targetJar);
-         JarOutputStream jos = new JarOutputStream(fos)) {
+  /**
+   * Creates a ZIP/JAR archive from a directory. Can also be used for SGX files (which are ZIP archives).
+   * The source directory should have a ".d" suffix that will be stripped for the archive name.
+   */
+  public static void createArchiveFromDirectory(Path sourceDir, Path targetArchive) throws IOException {
+    try (OutputStream fos = Files.newOutputStream(targetArchive);
+         ZipOutputStream zos = new ZipOutputStream(fos)) {
 
       Files.walkFileTree(sourceDir, new SimpleFileVisitor<Path>() {
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
           if (!dir.equals(sourceDir)) {
             String entryName = sourceDir.relativize(dir).toString().replace('\\', '/') + "/";
-            JarEntry entry = new JarEntry(entryName);
-            jos.putNextEntry(entry);
-            jos.closeEntry();
+            ZipEntry entry = new ZipEntry(entryName);
+            zos.putNextEntry(entry);
+            zos.closeEntry();
           }
           return FileVisitResult.CONTINUE;
         }
@@ -84,18 +88,18 @@ public class TestFixtureJarGenerator {
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
           String entryName = sourceDir.relativize(file).toString().replace('\\', '/');
-          JarEntry entry = new JarEntry(entryName);
-          jos.putNextEntry(entry);
+          ZipEntry entry = new ZipEntry(entryName);
+          zos.putNextEntry(entry);
 
           try (InputStream is = Files.newInputStream(file)) {
             byte[] buffer = new byte[8192];
             int len;
             while ((len = is.read(buffer)) > 0) {
-              jos.write(buffer, 0, len);
+              zos.write(buffer, 0, len);
             }
           }
 
-          jos.closeEntry();
+          zos.closeEntry();
           return FileVisitResult.CONTINUE;
         }
       });

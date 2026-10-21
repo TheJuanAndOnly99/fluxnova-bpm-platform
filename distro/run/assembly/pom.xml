@@ -135,6 +135,30 @@
 
   <build>
     <plugins>
+      <!-- Generate keystore.p12 at build time (not committed to VCS per OSPS-QA-05.01) -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>generate-keystore</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>sh</executable>
+              <arguments>
+                <argument>-c</argument>
+                <argument>
+                  test -f "${project.basedir}/resources/keystore.p12" || keytool -genkeypair -alias camunda -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore "${project.basedir}/resources/keystore.p12" -storepass camunda -keypass camunda -validity 3650 -dname "CN=localhost, OU=Fluxnova, O=FINOS, L=New York, ST=NY, C=US"
+                </argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -158,6 +182,20 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${project.basedir}/resources</directory>
+              <includes>
+                <include>keystore.p12</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
       </plugin>
     </plugins>
   </build>
