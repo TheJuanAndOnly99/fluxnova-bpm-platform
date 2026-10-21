@@ -126,8 +126,6 @@ The Fluxnova project spans multiple repositories in the [finos](https://github.c
 | [fluxnova-deploy](https://github.com/finos/fluxnova-deploy) | Deployment configurations and tools for Fluxnova |
 | [fluxnova-docs-theme](https://github.com/finos/fluxnova-docs-theme) | Theme and styling for Fluxnova documentation |
 | [fluxnova-ai](https://github.com/finos/fluxnova-ai) | Fluxnova AI Working Group |
-| [fluxnova-release-parent](https://github.com/finos/fluxnova-release-parent) | POM for Fluxnova releases with common release properties |
-| [fluxnova-bpm-release-parent](https://github.com/finos/fluxnova-bpm-release-parent) | POM for Fluxnova Platform releases with BPM release properties |
 
 ## Get Involved
 
