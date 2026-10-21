@@ -66,14 +66,16 @@ See [RELEASE.md](RELEASE.md) for release procedures for the BPM Platform. Other 
 
 ## Dependency update policy
 
-The project maintains its dependencies according to the following policy. See `.github/workflows/` in each repository for workflow implementations.
+The project maintains its dependencies according to the following policy.
 
 | Dependency type | Update frequency | Tooling |
 |---|---|---|
-| Security updates (all ecosystems) | As soon as practical after disclosure | Dependabot security updates (grouped), Dependency Review on PRs |
-| GitHub Actions | On Dependabot PRs | Dependabot |
-| Maven dependencies (non-security) | Periodically, at maintainer discretion | Dependabot PRs, manual review |
-| npm dependencies (non-security) | Periodically, at maintainer discretion | Dependabot PRs, manual review |
+| Security updates (all ecosystems) | As soon as practical after disclosure | Renovate vulnerability alerts, GitHub Dependabot alerts |
+| GitHub Actions | On Renovate PRs | Renovate |
+| Maven dependencies (non-security) | Periodically, at maintainer discretion | Renovate PRs (allow-listed packages), manual review |
+| npm dependencies (non-security) | Periodically, at maintainer discretion | Renovate PRs, lockfile maintenance |
+
+Renovate is configured in `.github/renovate.json5`. It opens update PRs for an explicit allow-list of packages, performs lockfile maintenance, and groups patch updates. Major and minor updates require dashboard approval.
 
 ### Security update SLA
 
@@ -86,13 +88,19 @@ The project maintains its dependencies according to the following policy. See `.
 
 **Note:** These targets are goals, not guarantees. Actual remediation time depends on fix availability, testing requirements, and maintainer capacity.
 
+### Selecting and obtaining dependencies
+
+- **Selection:** New dependencies are proposed and reviewed in pull requests. Licenses must be FINOS Category A or Category B (Category B only as unmodified binary/runtime dependencies, per the FINOS license categories), with explicit per-package exceptions.
+- **Obtaining (Maven):** Dependencies are obtained from Maven Central. Versions are managed centrally in `parent/pom.xml` and the BOM (`bom/fluxnova-bom/pom.xml`).
+- **Obtaining (npm):** Dependencies are obtained from the npm registry with committed lockfiles (`webapps/frontend/package-lock.json`, `engine-rest/docs/package-lock.json`).
+- **Tracking:** Renovate update PRs, GitHub Dependabot alerts, and CycloneDX SBOMs published with each release.
+
 ### Dependency scanning
 
-The following tools scan dependencies automatically across all fluxnova-* repositories:
-
-- **Dependabot alerts and security updates**: Enabled via FINOS org security configuration.
-- **Dependency Review**: Per-repo workflows block PRs that introduce dependencies with known high-severity vulnerabilities.
-- **License Scanning**: Per-repo workflows validate dependencies against the FINOS Category A approved license list.
+- **GitHub Dependabot alerts:** Enabled via FINOS org security configuration. Alerts maintainers to known vulnerabilities in dependencies.
+- **Dependency Review:** Runs on pull requests to flag dependencies with known vulnerabilities.
+- **License scanning:** Validates dependencies against the FINOS Category A/B allow-list on pull requests and releases.
+- **SBOMs:** CycloneDX SBOMs are generated and published with each release (Maven CycloneDX plugin for Java, `@cyclonedx/cyclonedx-npm` for npm).
 
 ## Vulnerability remediation policy
 
