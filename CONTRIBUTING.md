@@ -156,6 +156,22 @@ Check the repository's or module's README for additional module-specific instruc
 The `webapps` module requires NodeJS.
 You can exclude building them by running `mvn clean install -pl '!webapps,!webapps/assembly'`.
 
+### Binary files
+
+To meet [OpenSSF Baseline](https://baseline.openssf.org/) security requirements (OSPS-QA-05), we restrict which binary file types may be committed to version control.
+
+**Allowed binary assets:**
+- Images: `png`, `jpg`, `gif`, `ico`, `svg`
+- Fonts: `otf`, `ttf`, `woff`, `woff2`, `eot`
+- Example PDFs: `pdf`
+
+**Not allowed (must be generated during build):**
+- JAR files and class files (`jar`, `class`)
+- Archives (`zip`, `sgx`, `war`, `tar.gz`)
+- Keystores (`p12`, `jks`)
+- Other compiled output or executables
+
+If you need these artifacts for testing, generate them at build or test time using Maven plugins or test setup code. The CI workflow will reject pull requests that add disallowed binary files.
 
 ### Running Fluxnova BPM Platform
 

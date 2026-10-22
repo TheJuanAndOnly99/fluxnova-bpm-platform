@@ -24,3 +24,16 @@ camunda-h2-dbs
 
 *.DS_Store
 .vscode/
+
+# Maven wrapper JAR (use script-only wrapper mode)
+.mvn/wrapper/maven-wrapper.jar
+
+# Test fixture JARs (generated at test time from source directories)
+engine/src/test/resources/**/ClassPathScannerTest.*.jar
+
+# Test fixture SGX archives (generated at test time from *.sgx.d directories)
+engine/src/test/resources/**/*.sgx
+
+# Keystores (generated at build time - not committed per OSPS-QA-05.01)
+distro/run/assembly/resources/keystore.p12
+distro/run/core/src/test/resources/keystore.p12
