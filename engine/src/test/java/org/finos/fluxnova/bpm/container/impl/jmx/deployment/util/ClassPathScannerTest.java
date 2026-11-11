@@ -59,7 +59,8 @@ public class ClassPathScannerTest {
   }
   
   @BeforeAll
-  public static void setup() {
+  public static void setup() throws Exception {
+    TestFixtureJarGenerator.ensureTestJarsExist();
     scanner = new ClassPathProcessApplicationScanner();
   }
 

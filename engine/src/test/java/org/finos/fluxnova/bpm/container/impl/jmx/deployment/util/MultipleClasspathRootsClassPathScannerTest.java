@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.finos.fluxnova.bpm.container.impl.deployment.scanning.ClassPathProcessApplicationScanner;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 
@@ -35,6 +36,11 @@ import org.junit.jupiter.api.Test;
  * @author Daniel Meyer
  */
 public class MultipleClasspathRootsClassPathScannerTest {
+
+  @BeforeAll
+  public static void setup() throws Exception {
+    TestFixtureJarGenerator.ensureTestJarsExist();
+  }
 
   @Test
   public void testScanClassPath_multipleRoots() throws MalformedURLException {
